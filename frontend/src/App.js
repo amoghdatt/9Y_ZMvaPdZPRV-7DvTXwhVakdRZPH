@@ -4,6 +4,7 @@ import "./App.css";
 import NavbarComponent from "./components/navbar-component";
 import LoginPage from "./pages/Login-page";
 import SignInPage from "./pages/Signup-page";
+import UserUploadPage from "./pages/User-uploads-page";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Routes>
           <Route path="login" element={<LoginPage />} />
           <Route path="signin" element={<SignInPage />} />
+          <Route path="uploads" element={<UserUploadPage />} />
         </Routes>
       </BrowserRouter>
     </React.Fragment>

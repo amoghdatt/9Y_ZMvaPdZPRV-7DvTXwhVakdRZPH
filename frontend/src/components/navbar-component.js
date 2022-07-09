@@ -17,6 +17,9 @@ export default function NavbarComponent() {
             <Nav.Link as={Link} to="/signin">
               Signup
             </Nav.Link>
+            <Nav.Link as={Link} to="/uploads">
+              Uploads
+            </Nav.Link>
           </Nav>
         </Container>
       </Navbar>
