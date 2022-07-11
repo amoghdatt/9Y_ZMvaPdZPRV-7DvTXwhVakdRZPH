@@ -23,9 +23,14 @@ export default function NavbarComponent({ isUserLoggedIn }) {
                 </Nav.Link>
               </React.Fragment>
             ) : (
-              <Nav.Link as={Link} to="/uploads">
-                Uploads
-              </Nav.Link>
+              <>
+                <Nav.Link as={Link} to="/uploads">
+                  Uploads
+                </Nav.Link>
+                <Nav.Link as={Link} to="/logout">
+                  Logout
+                </Nav.Link>
+              </>
             )}
           </Nav>
         </Container>

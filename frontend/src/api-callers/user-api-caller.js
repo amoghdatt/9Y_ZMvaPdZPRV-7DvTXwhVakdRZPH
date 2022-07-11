@@ -15,7 +15,7 @@ export default function UserApiHandler({ axiosInstance }) {
     });
   };
 
-  this.signup = async function login(user) {
+  this.signup = async function signup(user) {
     return await httpAction.post({
       body: JSON.stringify({
         data: user,

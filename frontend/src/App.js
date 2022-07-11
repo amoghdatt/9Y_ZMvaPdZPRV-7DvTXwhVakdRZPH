@@ -7,6 +7,7 @@ import LoginPage from "./pages/Login-page";
 import SignInPage from "./pages/Signup-page";
 import UserUploadPage from "./pages/User-uploads-page";
 import { useState } from "react";
+import LogoutPage from "./pages/Logout-page";
 
 function App() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
@@ -28,6 +29,15 @@ function App() {
           />
           <Route path="signin" element={<SignInPage />} />
           <Route path="uploads" element={<UserUploadPage userId={userId} />} />
+          <Route
+            path="logout"
+            element={
+              <LogoutPage
+                setUserId={setUserId}
+                setIsUserLoggedIn={setIsUserLoggedIn}
+              />
+            }
+          />
           <Route path="/" element={<></>} />
         </Routes>
       </BrowserRouter>
