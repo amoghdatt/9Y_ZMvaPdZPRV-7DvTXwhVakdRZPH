@@ -1,13 +1,70 @@
+import { useState, useEffect } from "react";
 import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import ApiCaller from "../api-callers";
+const apiCaller = new ApiCaller();
+
+function FileAction() {
+  return (
+    <>
+      <td>
+        <Button variant="danger">Delete</Button>
+      </td>
+      <td>
+        <Button variant="warning">Share</Button>
+      </td>
+    </>
+  );
+}
+
+function UserFiles({ userFiles }) {
+  return userFiles.map((fileDetails) => {
+    return (
+      <tr key={fileDetails.guid}>
+        <td>{fileDetails.filename}</td>
+        <td>{fileDetails.fileType}</td>
+        <td>{fileDetails.filename}</td>
+        <FileAction />
+      </tr>
+    );
+  });
+}
 
 export default function UserUploadPage() {
+  const [userFiles, setUserFiles] = useState([]);
+
+  useEffect(() => {
+    apiCaller.userApiCaller
+      .fetchAllFiles("183438c9-6e1f-44ac-9c33-7e5a1b408074")
+      .then((result) => {
+        setUserFiles(result.data.files);
+      });
+  }, []);
+
+  const handleUpload = async (e) => {
+    const form = document.getElementById("formFile");
+    const fileDetails = new FormData();
+    fileDetails.append("file", form.files[0]);
+    const result = await apiCaller.userApiCaller.uploadUserFile({
+      file: fileDetails,
+      userId: "183438c9-6e1f-44ac-9c33-7e5a1b408074",
+    });
+    console.log(result);
+  };
+
   return (
     <Container>
-      <Row className="justify-content-center">
-        <Col xs={4} sm={4} md={4}>
-          <Button variant="primary"> UPLOAD</Button>
+      <Row className="justify-content-center uploadBar ">
+        <p></p>
+        <Col xs lg="4">
+          <div>
+            <input className="form-control" type="file" id="formFile" />
+          </div>
+        </Col>
+        <Col xs md={3}>
+          <Button onClick={handleUpload}>UPLOAD</Button>
         </Col>
       </Row>
+
       <Row className="justify-content-center">
         <Table>
           <thead>
@@ -20,19 +77,8 @@ export default function UserUploadPage() {
               </td>
             </tr>
           </thead>
-
           <tbody>
-            <tr>
-              <td>Example name</td>
-              <td>JPEG</td>
-              <td>Some lame description</td>
-              <td>
-                <Button variant="danger">Delete</Button>
-              </td>
-              <td>
-                <Button variant="warning">Share</Button>
-              </td>
-            </tr>
+            <UserFiles userFiles={userFiles} />
           </tbody>
         </Table>
       </Row>

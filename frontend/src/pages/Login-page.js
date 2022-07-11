@@ -1,6 +1,30 @@
+import { useEffect, useState } from "react";
 import { Container, Row, Form, Button, Col } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import ApiCaller from "../api-callers";
+const apiCaller = new ApiCaller();
 
-export default function LoginPage() {
+export default function LoginPage({ setIsUserLoggedIn, isUserLoggedIn }) {
+  const [email, setEmail] = useState("");
+  const navigate = useNavigate();
+  const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (isUserLoggedIn) navigate("/");
+  }, [isUserLoggedIn]);
+
+  const handleLogin = async (event) => {
+    console.log(password);
+    event.preventDefault();
+
+    const result = await apiCaller.userApiCaller.login({
+      email,
+      password,
+    });
+
+    setIsUserLoggedIn(true);
+  };
+
   return (
     <Container>
       <Row className="justify-content-center">
@@ -9,7 +33,12 @@ export default function LoginPage() {
           <Form>
             <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Label>Email</Form.Label>
-              <Form.Control type="email" placeholder="Enter email" />
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
               <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
               </Form.Text>
@@ -17,13 +46,18 @@ export default function LoginPage() {
 
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicCheckbox">
               <Form.Check type="checkbox" label="Check me out" />
             </Form.Group>
             <div className="d-grid gap-2">
-              <Button variant="primary" type="submit">
+              <Button variant="primary" type="submit" onClick={handleLogin}>
                 LOGIN
               </Button>
             </div>
