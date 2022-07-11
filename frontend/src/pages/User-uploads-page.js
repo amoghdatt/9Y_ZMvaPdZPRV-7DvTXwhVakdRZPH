@@ -5,7 +5,7 @@ import { MAX_UPLOAD_SIZE } from "../constants";
 import { ToastContainer, toast } from "react-toastify";
 const apiCaller = new ApiCaller();
 
-function FileAction({ handleFileDelete, guid }) {
+function FileAction({ handleFileDelete, handleFileShare, guid }) {
   return (
     <>
       <td>
@@ -14,13 +14,15 @@ function FileAction({ handleFileDelete, guid }) {
         </Button>
       </td>
       <td>
-        <Button variant="warning">Share</Button>
+        <Button variant="warning" onClick={handleFileShare(guid)}>
+          Share
+        </Button>
       </td>
     </>
   );
 }
 
-function UserFiles({ userFiles, handleFileDelete }) {
+function UserFiles({ userFiles, handleFileDelete, handleFileShare }) {
   return userFiles.map((fileDetails) => {
     return (
       <tr key={fileDetails.guid}>
@@ -30,10 +32,26 @@ function UserFiles({ userFiles, handleFileDelete }) {
         <FileAction
           guid={fileDetails.guid}
           handleFileDelete={handleFileDelete}
+          handleFileShare={handleFileShare}
         />
       </tr>
     );
   });
+}
+
+function DownloadLink({ copyToClipboard, shareableDownloadLink }) {
+  return (
+    <Row className="justify-content-center">
+      <Col xs md={3}>
+        <Form.Control type="text" value={shareableDownloadLink} />
+      </Col>
+      <Col xs md={3}>
+        <Button variant="outline-success" size="sm" onClick={copyToClipboard}>
+          COPY
+        </Button>
+      </Col>
+    </Row>
+  );
 }
 
 export default function UserUploadPage({ userId }) {
@@ -41,6 +59,7 @@ export default function UserUploadPage({ userId }) {
   const [isUploaded, setIsUploaded] = useState(false);
   const [isFileDeleted, setIsFileDeleted] = useState(false);
   const [fileDescription, setFileDescription] = useState("");
+  const [shareableDownloadLink, setShareableDownloadLink] = useState("");
 
   useEffect(() => {
     apiCaller.userApiCaller.fetchAllFiles(userId).then((result) => {
@@ -102,6 +121,22 @@ export default function UserUploadPage({ userId }) {
     };
   };
 
+  const handleFileShare = (fileId) => {
+    return async () => {
+      const result = await apiCaller.userApiCaller.getShareableDownloadLink({
+        fileId,
+        userId,
+      });
+
+      console.log(result);
+      setShareableDownloadLink(result.data.link);
+    };
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(shareableDownloadLink);
+  };
+
   return (
     <Container>
       <ToastContainer autoClose={3000} />
@@ -125,6 +160,13 @@ export default function UserUploadPage({ userId }) {
         </Col>
       </Row>
 
+      {shareableDownloadLink !== "" ? (
+        <DownloadLink
+          copyToClipboard={copyToClipboard}
+          shareableDownloadLink={shareableDownloadLink}
+        />
+      ) : undefined}
+
       <Row className="justify-content-center">
         <Table>
           <thead>
@@ -141,6 +183,7 @@ export default function UserUploadPage({ userId }) {
             <UserFiles
               userFiles={userFiles}
               handleFileDelete={handleFileDelete}
+              handleFileShare={handleFileShare}
             />
           </tbody>
         </Table>

@@ -42,4 +42,13 @@ export default function UserApiHandler({ axiosInstance }) {
       url: `/v1/user/${userId}/files/${fileId}`,
     });
   };
+
+  this.getShareableDownloadLink = async function getShareableDownloadLink({
+    userId,
+    fileId,
+  }) {
+    return await httpAction.get({
+      url: `/v1/user/${userId}/file/${fileId}/link`,
+    });
+  };
 }
