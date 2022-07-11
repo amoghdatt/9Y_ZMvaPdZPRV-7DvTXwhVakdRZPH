@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
-import { Button, Col, Container, Row, Table } from "react-bootstrap";
+import { Button, Col, Container, Row, Table, Form } from "react-bootstrap";
 import ApiCaller from "../api-callers";
 const apiCaller = new ApiCaller();
 
-function FileAction() {
+function FileAction({ handleFileDelete, guid }) {
   return (
     <>
       <td>
-        <Button variant="danger">Delete</Button>
+        <Button variant="danger" onClick={handleFileDelete(guid)}>
+          Delete
+        </Button>
       </td>
       <td>
         <Button variant="warning">Share</Button>
@@ -16,39 +18,63 @@ function FileAction() {
   );
 }
 
-function UserFiles({ userFiles }) {
+function UserFiles({ userFiles, handleFileDelete }) {
   return userFiles.map((fileDetails) => {
     return (
       <tr key={fileDetails.guid}>
         <td>{fileDetails.filename}</td>
         <td>{fileDetails.fileType}</td>
-        <td>{fileDetails.filename}</td>
-        <FileAction />
+        <td>{fileDetails.description}</td>
+        <FileAction
+          guid={fileDetails.guid}
+          handleFileDelete={handleFileDelete}
+        />
       </tr>
     );
   });
 }
 
-export default function UserUploadPage() {
+export default function UserUploadPage({ userId }) {
   const [userFiles, setUserFiles] = useState([]);
+  const [isUploaded, setIsUploaded] = useState(false);
+  const [isFileDeleted, setIsFileDeleted] = useState(false);
+  const [fileDescription, setFileDescription] = useState("");
 
   useEffect(() => {
-    apiCaller.userApiCaller
-      .fetchAllFiles("183438c9-6e1f-44ac-9c33-7e5a1b408074")
-      .then((result) => {
-        setUserFiles(result.data.files);
-      });
-  }, []);
+    apiCaller.userApiCaller.fetchAllFiles(userId).then((result) => {
+      console.log(result);
+      setUserFiles(result.data.files);
+      setIsFileDeleted(false);
+    });
+  }, [isUploaded, isFileDeleted]);
 
   const handleUpload = async (e) => {
     const form = document.getElementById("formFile");
     const fileDetails = new FormData();
+    fileDetails.append("description", fileDescription);
     fileDetails.append("file", form.files[0]);
     const result = await apiCaller.userApiCaller.uploadUserFile({
       file: fileDetails,
-      userId: "183438c9-6e1f-44ac-9c33-7e5a1b408074",
+      userId,
     });
     console.log(result);
+    setFileDescription("");
+    setIsUploaded(true);
+    console.log(form);
+  };
+
+  const handleFileDelete = (fileId) => {
+    return async () => {
+      console.log(apiCaller.userApiCaller);
+      const result = await apiCaller.userApiCaller.deleteUserFile({
+        fileId,
+        userId,
+      });
+
+      setIsFileDeleted(true);
+
+      console.log(result);
+    };
   };
 
   return (
@@ -59,6 +85,14 @@ export default function UserUploadPage() {
           <div>
             <input className="form-control" type="file" id="formFile" />
           </div>
+        </Col>
+        <Col>
+          <Form.Control
+            type="text"
+            placeholder="Enter description for the file"
+            value={fileDescription}
+            onChange={(e) => setFileDescription(e.target.value)}
+          />
         </Col>
         <Col xs md={3}>
           <Button onClick={handleUpload}>UPLOAD</Button>
@@ -78,7 +112,10 @@ export default function UserUploadPage() {
             </tr>
           </thead>
           <tbody>
-            <UserFiles userFiles={userFiles} />
+            <UserFiles
+              userFiles={userFiles}
+              handleFileDelete={handleFileDelete}
+            />
           </tbody>
         </Table>
       </Row>

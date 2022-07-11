@@ -69,5 +69,27 @@ export default function AxiosHttpAction(axiosInstance) {
     }
   };
 
-  return { post, get, filePost };
+  const deleteResource = async ({
+    method = "delete",
+    url,
+    headers = {},
+    responseType = "json",
+  }) => {
+    try {
+      const response = await axiosInstance({
+        method,
+        url,
+        responseType,
+        headers: {
+          "Content-Type": "application/json",
+          ...headers,
+        },
+      });
+      return response.data;
+    } catch (e) {
+      return e?.response?.data ?? "Unknown error";
+    }
+  };
+
+  return { post, get, filePost, deleteResource };
 }

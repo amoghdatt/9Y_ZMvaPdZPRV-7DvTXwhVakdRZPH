@@ -4,7 +4,11 @@ import { useNavigate } from "react-router-dom";
 import ApiCaller from "../api-callers";
 const apiCaller = new ApiCaller();
 
-export default function LoginPage({ setIsUserLoggedIn, isUserLoggedIn }) {
+export default function LoginPage({
+  setIsUserLoggedIn,
+  isUserLoggedIn,
+  setUserId,
+}) {
   const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
@@ -14,7 +18,6 @@ export default function LoginPage({ setIsUserLoggedIn, isUserLoggedIn }) {
   }, [isUserLoggedIn]);
 
   const handleLogin = async (event) => {
-    console.log(password);
     event.preventDefault();
 
     const result = await apiCaller.userApiCaller.login({
@@ -22,6 +25,8 @@ export default function LoginPage({ setIsUserLoggedIn, isUserLoggedIn }) {
       password,
     });
 
+    console.log(result);
+    setUserId(result.data.userId);
     setIsUserLoggedIn(true);
   };
 

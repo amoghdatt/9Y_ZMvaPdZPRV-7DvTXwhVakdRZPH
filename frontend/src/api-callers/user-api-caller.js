@@ -36,4 +36,10 @@ export default function UserApiHandler({ axiosInstance }) {
       url: `/v1/user/${userId}/file/upload`,
     });
   };
+
+  this.deleteUserFile = async function deleteFile({ userId, fileId }) {
+    return await httpAction.deleteResource({
+      url: `/v1/user/${userId}/files/${fileId}`,
+    });
+  };
 }

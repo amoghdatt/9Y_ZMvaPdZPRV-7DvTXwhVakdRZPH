@@ -9,6 +9,7 @@ import { useState } from "react";
 
 function App() {
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
+  const [userId, setUserId] = useState("");
   return (
     <React.Fragment>
       <BrowserRouter>
@@ -20,11 +21,12 @@ function App() {
               <LoginPage
                 setIsUserLoggedIn={setIsUserLoggedIn}
                 isUserLoggedIn={isUserLoggedIn}
+                setUserId={setUserId}
               />
             }
           />
           <Route path="signin" element={<SignInPage />} />
-          <Route path="uploads" element={<UserUploadPage />} />
+          <Route path="uploads" element={<UserUploadPage userId={userId} />} />
           <Route path="/" element={<></>} />
         </Routes>
       </BrowserRouter>
