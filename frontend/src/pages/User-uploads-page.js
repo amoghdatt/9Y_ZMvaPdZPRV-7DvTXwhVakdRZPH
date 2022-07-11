@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { Button, Col, Container, Row, Table, Form } from "react-bootstrap";
 import ApiCaller from "../api-callers";
+import { MAX_UPLOAD_SIZE } from "../constants";
+import { ToastContainer, toast } from "react-toastify";
 const apiCaller = new ApiCaller();
 
 function FileAction({ handleFileDelete, guid }) {
@@ -48,19 +50,42 @@ export default function UserUploadPage({ userId }) {
     });
   }, [isUploaded, isFileDeleted]);
 
+  const isWithinSizeLimit = (fileSize) => {
+    return fileSize <= MAX_UPLOAD_SIZE;
+  };
+
   const handleUpload = async (e) => {
     const form = document.getElementById("formFile");
+    if (!isWithinSizeLimit(form.files[0].size)) {
+      toast.error("Size Limit exceeded", {
+        position: "top-center",
+        hideProgressBar: false,
+        closeOnClick: true,
+        draggable: true,
+        progress: undefined,
+      });
+      return;
+    }
+
     const fileDetails = new FormData();
     fileDetails.append("description", fileDescription);
     fileDetails.append("file", form.files[0]);
-    const result = await apiCaller.userApiCaller.uploadUserFile({
+
+    await apiCaller.userApiCaller.uploadUserFile({
       file: fileDetails,
       userId,
     });
-    console.log(result);
+
+    toast.success("Uploaded Successfully!", {
+      position: "top-center",
+      hideProgressBar: false,
+      closeOnClick: true,
+      draggable: true,
+      progress: undefined,
+    });
+
     setFileDescription("");
     setIsUploaded(true);
-    console.log(form);
   };
 
   const handleFileDelete = (fileId) => {
@@ -79,6 +104,7 @@ export default function UserUploadPage({ userId }) {
 
   return (
     <Container>
+      <ToastContainer autoClose={3000} />
       <Row className="justify-content-center uploadBar ">
         <p></p>
         <Col xs lg="4">

@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
 import NavbarComponent from "./components/navbar-component";
 import LoginPage from "./pages/Login-page";
 import SignInPage from "./pages/Signup-page";
