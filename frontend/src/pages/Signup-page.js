@@ -24,10 +24,7 @@ export default function SignInPage() {
       },
     };
 
-    console.log(newUser);
-
-    const result = await apiCaller.userApiCaller.signup(newUser);
-    console.log(result);
+    await apiCaller.userApiCaller.signup(newUser);
   };
 
   return (

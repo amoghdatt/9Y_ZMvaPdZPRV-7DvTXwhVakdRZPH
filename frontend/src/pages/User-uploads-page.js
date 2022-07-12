@@ -56,18 +56,18 @@ function DownloadLink({ copyToClipboard, shareableDownloadLink }) {
 
 export default function UserUploadPage({ userId }) {
   const [userFiles, setUserFiles] = useState([]);
-  const [isUploaded, setIsUploaded] = useState(false);
-  const [isFileDeleted, setIsFileDeleted] = useState(false);
   const [fileDescription, setFileDescription] = useState("");
   const [shareableDownloadLink, setShareableDownloadLink] = useState("");
 
   useEffect(() => {
+    fetchAllUserFiles();
+  }, []);
+
+  const fetchAllUserFiles = () => {
     apiCaller.userApiCaller.fetchAllFiles(userId).then((result) => {
-      console.log(result);
       setUserFiles(result.data.files);
-      setIsFileDeleted(false);
     });
-  }, [isUploaded, isFileDeleted]);
+  };
 
   const isWithinSizeLimit = (fileSize) => {
     return fileSize <= MAX_UPLOAD_SIZE;
@@ -103,21 +103,18 @@ export default function UserUploadPage({ userId }) {
       progress: undefined,
     });
 
+    fetchAllUserFiles();
     setFileDescription("");
-    setIsUploaded(true);
   };
 
   const handleFileDelete = (fileId) => {
     return async () => {
-      console.log(apiCaller.userApiCaller);
-      const result = await apiCaller.userApiCaller.deleteUserFile({
+      await apiCaller.userApiCaller.deleteUserFile({
         fileId,
         userId,
       });
 
-      setIsFileDeleted(true);
-
-      console.log(result);
+      fetchAllUserFiles();
     };
   };
 
@@ -128,7 +125,6 @@ export default function UserUploadPage({ userId }) {
         userId,
       });
 
-      console.log(result);
       setShareableDownloadLink(result.data.link);
     };
   };
@@ -139,7 +135,7 @@ export default function UserUploadPage({ userId }) {
 
   return (
     <Container>
-      <ToastContainer autoClose={3000} />
+      <ToastContainer autoClose={500} />
       <Row className="justify-content-center uploadBar ">
         <p></p>
         <Col xs lg="4">

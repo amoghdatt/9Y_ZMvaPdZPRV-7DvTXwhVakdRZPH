@@ -25,7 +25,6 @@ export default function LoginPage({
       password,
     });
 
-    console.log(result);
     setUserId(result.data.userId);
     setIsUserLoggedIn(true);
   };
